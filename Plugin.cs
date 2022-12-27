@@ -17,7 +17,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.0";
+        internal const string ModVersion = "1.0.1";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -90,7 +90,7 @@ namespace LogoChanger
             }
         }
 
-        private static void ReloadImagesFromFolder(object sender, FileSystemEventArgs e)
+        internal static void ReloadImagesFromFolder(object sender, FileSystemEventArgs e)
         {
             Load("(file system)");
             if (CheckIfStartScene() && _modEnabled.Value == Toggle.On)
@@ -245,5 +245,14 @@ namespace LogoChanger
         private static Sprite _mistLogoSprite = null!;
 
         #endregion
+    }
+    
+    [HarmonyPatch(typeof(Player),nameof(Player.Awake))]
+    static class PlayerAwakePatch
+    {
+        static void Prefix(Player __instance)
+        {
+            LogoChangerPlugin.ReloadImagesFromFolder(null!, null!);
+        }
     }
 }

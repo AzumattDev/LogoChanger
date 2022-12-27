@@ -27,5 +27,7 @@ For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
 ***
 
 > # Update Information (Latest listed first)
+> ### v1.0.1
+> - Fixed a bug where the logo would not change correctly
 > ### v1.0.0
 > - Initial Release
