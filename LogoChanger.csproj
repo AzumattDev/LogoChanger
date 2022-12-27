@@ -142,7 +142,7 @@
     </Target>
     <Target Name="MakeThunderstorePackage" AfterTargets="Copy">
         <ItemGroup>
-            <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; Thunderstore\README.md; Thunderstore\manifest.json; Thunderstore\icon.png;"/>
+            <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; Thunderstore\README.md; Thunderstore\manifest.json; Thunderstore\icon.png; Thunderstore\LogoChanger_LOGO.png; Thunderstore\LogoChanger_MistlandsLogo.png; Thunderstore\DefaultLogos.zip;"/>
         </ItemGroup>
         <MakeDir Directories="$(PackageDir)"/>
         <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(PackageDir)"/>
