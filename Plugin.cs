@@ -17,7 +17,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.2";
+        internal const string ModVersion = "1.0.3";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -45,6 +45,7 @@ namespace LogoChanger
                 "The logo to use on the main menu to replace \"Valheim\" image, should be found somewhere in the plugins folder and sized at 2048x448");
             _modEnabled.SettingChanged += ReloadImagesFromFolder;
 
+            MoveImagesToConfigFolder();
             ReloadImagesFromFolder(null!, null!);
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
@@ -66,13 +67,45 @@ namespace LogoChanger
             configWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             configWatcher.EnableRaisingEvents = true;
 
-            FileSystemWatcher imageWatcher = new(Paths.PluginPath);
+            FileSystemWatcher imageWatcher = new(Paths.ConfigPath);
             imageWatcher.Changed += ReloadImagesFromFolder;
             imageWatcher.Created += ReloadImagesFromFolder;
             imageWatcher.Renamed += ReloadImagesFromFolder;
             imageWatcher.IncludeSubdirectories = true;
             imageWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             imageWatcher.EnableRaisingEvents = true;
+            imageWatcher.Filter = "LogoChanger*.png";
+        }
+
+        private static void MoveImagesToConfigFolder()
+        {
+            string destinationFolderPath = Path.Combine(Paths.ConfigPath, "Azumatt.LogoChanger_Images");
+            if (!Directory.Exists(destinationFolderPath))
+            {
+                Directory.CreateDirectory(destinationFolderPath);
+            }
+
+            string[] files = Directory.GetFiles(Paths.PluginPath, "LogoChanger*.png", SearchOption.AllDirectories);
+            string[] zipFiles = Directory.GetFiles(Paths.PluginPath, "DefaultLogos.zip", SearchOption.AllDirectories);
+
+            if (zipFiles.Length > 0)
+            {
+                string sourceZipFile = zipFiles[0];
+                string destinationZipFile = Path.Combine(destinationFolderPath, "DefaultLogos.zip");
+                if (File.Exists(destinationZipFile))
+                {
+                    File.Delete(destinationZipFile);
+                }
+
+                File.Move(sourceZipFile, destinationZipFile);
+            }
+
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string destinationFilePath = Path.Combine(destinationFolderPath, fileName);
+                File.Move(file, destinationFilePath);
+            }
         }
 
         private void ReadConfigValues(object sender, FileSystemEventArgs e)
@@ -127,7 +160,7 @@ namespace LogoChanger
         private static Texture2D LoadTexture(string name, bool isEmbed)
         {
             Texture2D texture = new(0, 0);
-            string? directoryName = Path.GetDirectoryName(Paths.PluginPath);
+            string? directoryName = Path.GetDirectoryName(Paths.ConfigPath);
             if (directoryName == null) return texture;
             List<string> paths = Directory.GetFiles(directoryName, "LogoChanger*.png", SearchOption.AllDirectories)
                 .OrderBy(Path.GetFileName).ToList();
