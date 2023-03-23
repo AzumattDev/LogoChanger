@@ -18,7 +18,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.4";
+        internal const string ModVersion = "1.0.5";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -68,14 +68,13 @@ namespace LogoChanger
             configWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             configWatcher.EnableRaisingEvents = true;
 
-            FileSystemWatcher imageWatcher = new(Paths.ConfigPath);
+            FileSystemWatcher imageWatcher = new(Paths.ConfigPath, "LogoChanger*.png");
             imageWatcher.Changed += ReloadImagesFromFolder;
             imageWatcher.Created += ReloadImagesFromFolder;
             imageWatcher.Renamed += ReloadImagesFromFolder;
             imageWatcher.IncludeSubdirectories = true;
             imageWatcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             imageWatcher.EnableRaisingEvents = true;
-            imageWatcher.Filter = "LogoChanger*.png";
         }
 
         private static void MoveImagesToConfigFolder()

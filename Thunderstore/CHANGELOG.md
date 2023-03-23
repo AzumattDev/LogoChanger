@@ -1,3 +1,5 @@
+> ### v1.0.5
+> - Fix issues with the filter.
 > ### v1.0.4
 > - Fix a bug with how the mod is packaged. Unfortunately this means that I cannot provide the logo images outside of
     the zip like I used to. This is to protect custom images from being overriden should they have the same name as the
