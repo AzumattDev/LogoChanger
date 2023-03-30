@@ -1,3 +1,5 @@
+> ### v1.0.6
+> - Move things around, forgot to check current scene in patch as well.
 > ### v1.0.5
 > - Fix issues with the filter.
 > ### v1.0.4

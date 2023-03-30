@@ -18,7 +18,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.5";
+        internal const string ModVersion = "1.0.6";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -125,16 +125,16 @@ namespace LogoChanger
 
         internal static void ReloadImagesFromFolder(object sender, FileSystemEventArgs e)
         {
+            if (!CheckIfStartScene() || _modEnabled.Value != Toggle.On) return;
             Load("(file system)");
-            if (CheckIfStartScene() && _modEnabled.Value == Toggle.On)
-                FindMenuLogos();
+            FindMenuLogos();
         }
 
         private static void ReloadImagesFromFolder(object sender, EventArgs e)
         {
+            if (!CheckIfStartScene() || _modEnabled.Value != Toggle.On) return;
             Load("(setting changed)");
-            if (CheckIfStartScene() && _modEnabled.Value == Toggle.On)
-                FindMenuLogos();
+            FindMenuLogos();
         }
 
         private static void Load(string calledMethod)
@@ -181,7 +181,7 @@ namespace LogoChanger
             return texture!;
         }
 
-        private static bool CheckIfStartScene()
+        internal static bool CheckIfStartScene()
         {
             return SceneManager.GetActiveScene().name == "start";
         }
@@ -285,6 +285,7 @@ namespace LogoChanger
     {
         static void Prefix(Player __instance)
         {
+            if (!LogoChangerPlugin.CheckIfStartScene()) return;
             LogoChangerPlugin.ReloadImagesFromFolder(null!, null!);
         }
     }
