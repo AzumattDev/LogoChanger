@@ -18,7 +18,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.6";
+        internal const string ModVersion = "1.0.7";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -200,10 +200,12 @@ namespace LogoChanger
                     $"Couldn't find LOGO in hierarchy of the main menu or couldn't assign the LOGO sprite. {e}");
                 throw;
             }
-
             try
             {
-                Utils.FindChild(logoTransform, "MistlandsLogo").GetComponent<Image>().sprite = _mistLogoSprite;
+                Utils.FindChild(logoTransform, "Mistlands").gameObject.SetActive(true); // Since Mistlands is gone, but they didn't make a new gameobject for Hildir's. Enable the old one.
+                var mistlandsLogo = Utils.FindChild(logoTransform, "MistlandsLogo");
+                mistlandsLogo.localPosition -= new Vector3(0, 210, 0);
+                mistlandsLogo.GetComponent<Image>().sprite = _mistLogoSprite;
             }
             catch (Exception e)
             {
