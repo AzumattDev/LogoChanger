@@ -22,14 +22,10 @@ namespace LogoChanger
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
-
-        private static readonly string ConfigFileFullPath =
-            Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
-
+        private static readonly string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
         private readonly Harmony _harmony = new(ModGUID);
-
-        private static readonly ManualLogSource LogoChangerLogger =
-            BepInEx.Logging.Logger.CreateLogSource(ModName);
+        private static readonly ManualLogSource LogoChangerLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
+        internal static bool IsMistlandsLogoAdjusted = false;
 
         private enum Toggle
         {
@@ -188,84 +184,61 @@ namespace LogoChanger
 
         private static void FindMenuLogos()
         {
-            if(_mainLogoSprite == null || _mistLogoSprite == null) return;
+            if (_mainLogoSprite == null || _mistLogoSprite == null) return;
+
             Transform? logoTransform = Utils.FindChild(FejdStartup.m_instance.m_mainMenu.transform, "Logo")?.transform;
-            try
+
+            if (logoTransform == null) return;
+
+            TryUpdateLogo(logoTransform, "LOGO", _mainLogoSprite, $"Couldn't find LOGO in hierarchy of the main menu or couldn't assign the LOGO sprite.");
+
+            Utils.FindChild(logoTransform, "Mistlands")?.gameObject.SetActive(true);
+            var mistlandsLogo = Utils.FindChild(logoTransform, "MistlandsLogo");
+            if (mistlandsLogo)
             {
-                Utils.FindChild(logoTransform, "LOGO").gameObject.GetComponent<Image>().sprite = _mainLogoSprite;
-            }
-            catch (Exception e)
-            {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find LOGO in hierarchy of the main menu or couldn't assign the LOGO sprite. {e}");
-                throw;
-            }
-            try
-            {
-                Utils.FindChild(logoTransform, "Mistlands").gameObject.SetActive(true); // Since Mistlands is gone, but they didn't make a new gameobject for Hildir's. Enable the old one.
-                var mistlandsLogo = Utils.FindChild(logoTransform, "MistlandsLogo");
-                mistlandsLogo.localPosition -= new Vector3(0, 210, 0);
+                if (!IsMistlandsLogoAdjusted)
+                {
+                    mistlandsLogo.localPosition -= new Vector3(0, 210, 0);
+                    IsMistlandsLogoAdjusted = true;
+                }
+
                 mistlandsLogo.GetComponent<Image>().sprite = _mistLogoSprite;
             }
-            catch (Exception e)
+            else
             {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find MistlandsLogo in hierarchy of the main menu or couldn't assign the MistlandsLogo sprite. {e}");
-                throw;
+                LogoChangerLogger.LogError($"Couldn't find MistlandsLogo in hierarchy of the main menu or couldn't assign the MistlandsLogo sprite.");
+                throw new Exception();
             }
 
+            string[] objectsToDisable = { "Mist (1)", "Mist (2)", "Mist (3)", "Embers (1)", "Embers (2)" };
+            foreach (var obj in objectsToDisable)
+            {
+                TryDisableChild(logoTransform, obj, $"Couldn't find {obj} in hierarchy of the main menu or couldn't disable {obj} gameobject.");
+            }
+        }
+
+        private static void TryUpdateLogo(Transform parentTransform, string childName, Sprite logoSprite, string errorMessage)
+        {
             try
             {
-                Utils.FindChild(logoTransform, "Mist (1)").gameObject.SetActive(false);
+                Utils.FindChild(parentTransform, childName).GetComponent<Image>().sprite = logoSprite;
             }
             catch (Exception e)
             {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find Mist (1) in hierarchy of the main menu or couldn't disable Mist (1) gameobject. {e}");
+                LogoChangerLogger.LogError($"{errorMessage} {e}");
                 throw;
             }
+        }
 
+        private static void TryDisableChild(Transform parentTransform, string childName, string errorMessage)
+        {
             try
             {
-                Utils.FindChild(logoTransform, "Mist (2)").gameObject.SetActive(false);
+                Utils.FindChild(parentTransform, childName).gameObject.SetActive(false);
             }
             catch (Exception e)
             {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find Mist (2) in hierarchy of the main menu or couldn't disable Mist (2) gameobject. {e}");
-                throw;
-            }
-
-            try
-            {
-                Utils.FindChild(logoTransform, "Mist (3)").gameObject.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find Mist (3) in hierarchy of the main menu or couldn't disable Mist (3) gameobject. {e}");
-                throw;
-            }
-
-            try
-            {
-                Utils.FindChild(logoTransform, "Embers (1)").gameObject.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find Embers (1) in hierarchy of the main menu or couldn't disable Embers (1) gameobject. {e}");
-                throw;
-            }
-
-            try
-            {
-                Utils.FindChild(logoTransform, "Embers (2)").gameObject.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                LogoChangerLogger.LogError(
-                    $"Couldn't find Embers (2) in hierarchy of the main menu or couldn't disable Embers (2) gameobject. {e}");
+                LogoChangerLogger.LogError($"{errorMessage} {e}");
                 throw;
             }
         }
@@ -281,13 +254,18 @@ namespace LogoChanger
 
         #endregion
     }
-    
-    [HarmonyPatch(typeof(Player),nameof(Player.Awake))]
+
+    [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
     static class PlayerAwakePatch
     {
         static void Prefix(Player __instance)
         {
-            if (!LogoChangerPlugin.CheckIfStartScene()) return;
+            if (!LogoChangerPlugin.CheckIfStartScene())
+            {
+                LogoChangerPlugin.IsMistlandsLogoAdjusted = false;
+                return;
+            }
+
             LogoChangerPlugin.ReloadImagesFromFolder(null!, null!);
         }
     }
