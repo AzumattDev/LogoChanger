@@ -1,3 +1,5 @@
+> ### v1.0.8
+> - Pushing an update to show I checked. No changes.
 > ### v1.0.7
 > - Minor fix for Hildir's Request. With Mistlands being gone, they disabled the gameobject for one of the logos. Not
     replacing it with anything related to Hildir's Request means I have to re-enable it and move it down to normal

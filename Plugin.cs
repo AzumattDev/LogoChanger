@@ -18,7 +18,7 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.7";
+        internal const string ModVersion = "1.0.8";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
