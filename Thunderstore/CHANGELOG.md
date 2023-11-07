@@ -1,3 +1,5 @@
+> ### v1.0.9
+> - Compile against Valheim 0.217.28
 > ### v1.0.8
 > - Pushing an update to show I checked. No changes.
 > ### v1.0.7
