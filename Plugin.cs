@@ -18,14 +18,14 @@ namespace LogoChanger
     public class LogoChangerPlugin : BaseUnityPlugin
     {
         internal const string ModName = "LogoChanger";
-        internal const string ModVersion = "1.0.9";
+        internal const string ModVersion = "1.0.10";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
         private static readonly string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
         private readonly Harmony _harmony = new(ModGUID);
         private static readonly ManualLogSource LogoChangerLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
-        internal static bool IsMistlandsLogoAdjusted = false;
+        internal static bool IsAshlandsLogoAdjusted = false;
 
         private enum Toggle
         {
@@ -38,7 +38,7 @@ namespace LogoChanger
             _modEnabled = Config.Bind("1 - General", "Mod Enabled?", Toggle.On, "Enable/Disable the mod");
             _mainMenuLogo = Config.Bind("2 - Main Menu", "Main Menu Logo", "LogoChanger_LOGO.png",
                 "The logo to use on the main menu to replace \"Valheim\" image, should be found somewhere in the plugins folder and sized at 1000x394");
-            _mistMenuLogo = Config.Bind("2 - Main Menu", "Mislands Menu Logo", "LogoChanger_MistlandsLogo.png",
+            _mistMenuLogo = Config.Bind("2 - Main Menu", "Mislands Menu Logo", "LogoChanger_AshlandsLogo.png",
                 "The logo to use on the main menu to replace \"Valheim\" image, should be found somewhere in the plugins folder and sized at 2048x448");
             _modEnabled.SettingChanged += ReloadImagesFromFolder;
 
@@ -192,26 +192,33 @@ namespace LogoChanger
 
             TryUpdateLogo(logoTransform, "LOGO", _mainLogoSprite, $"Couldn't find LOGO in hierarchy of the main menu or couldn't assign the LOGO sprite.");
 
-            Utils.FindChild(logoTransform, "Mistlands")?.gameObject.SetActive(true);
-            var mistlandsLogo = Utils.FindChild(logoTransform, "MistlandsLogo");
+            Utils.FindChild(logoTransform, "Ashlands")?.gameObject.SetActive(true);
+            var mistlandsLogo = Utils.FindChild(logoTransform, "AshlandsLogo");
             if (mistlandsLogo)
             {
-                if (!IsMistlandsLogoAdjusted)
+                if (!IsAshlandsLogoAdjusted)
                 {
-                    mistlandsLogo.localPosition -= new Vector3(0, 210, 0);
-                    IsMistlandsLogoAdjusted = true;
+                    mistlandsLogo.localPosition -= new Vector3(0, 10, 0);
+                    IsAshlandsLogoAdjusted = true;
                 }
 
                 mistlandsLogo.GetComponent<Image>().sprite = _mistLogoSprite;
             }
             else
             {
-                LogoChangerLogger.LogError($"Couldn't find MistlandsLogo in hierarchy of the main menu or couldn't assign the MistlandsLogo sprite.");
+                LogoChangerLogger.LogError($"Couldn't find AshlandsLogo in hierarchy of the main menu or couldn't assign the AshlandsLogo sprite.");
                 throw new Exception();
             }
 
-            string[] objectsToDisable = { "Mist (1)", "Mist (2)", "Mist (3)", "Embers (1)", "Embers (2)" };
+            string[] objectsToDisableLogoRoot = { "Embers", "Embers (1)", "Embers (2)", "Embers (3)" };
+            string[] objectsToDisableAshlandsRoot = { "Embers", "Embers (1)", "Embers (2)", "Embers (3)" };
+            string[] objectsToDisable = { "Heat Distortion", "AshlandsLogo_Glow", "Embers", "Embers (1)", "Embers (2)", "Embers (3)", "Ash" };
             foreach (var obj in objectsToDisable)
+            {
+                TryDisableChild(logoTransform, obj, $"Couldn't find {obj} in hierarchy of the main menu or couldn't disable {obj} gameobject.");
+            }
+            
+            foreach (var obj in objectsToDisableLogoRoot)
             {
                 TryDisableChild(logoTransform, obj, $"Couldn't find {obj} in hierarchy of the main menu or couldn't disable {obj} gameobject.");
             }
@@ -262,7 +269,7 @@ namespace LogoChanger
         {
             if (!LogoChangerPlugin.CheckIfStartScene())
             {
-                LogoChangerPlugin.IsMistlandsLogoAdjusted = false;
+                LogoChangerPlugin.IsAshlandsLogoAdjusted = false;
                 return;
             }
 

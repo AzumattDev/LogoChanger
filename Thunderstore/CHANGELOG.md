@@ -1,3 +1,7 @@
+> ### v1.0.11
+> - Update for Bog Witch
+> ### v1.0.10
+> - Fix issues for Ashlands and recompile.
 > ### v1.0.9
 > - Compile against Valheim 0.217.28
 > ### v1.0.8
