@@ -1,6 +1,6 @@
 ﻿{
   "name": "Logo_Changer",
-  "version_number": "1.0.9",
+  "version_number": "1.0.10",
   "website_url": "",
   "description": "Changes main menu logo and mistlands logo. Change change the name it searches for in BepInEx folder. Comes with a default logo & default game logos as examples.",
   "dependencies": [
