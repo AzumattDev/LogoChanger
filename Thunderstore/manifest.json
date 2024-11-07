@@ -1,8 +1,8 @@
 ﻿{
   "name": "Logo_Changer",
-  "version_number": "1.0.10",
+  "version_number": "1.0.11",
   "website_url": "",
-  "description": "Changes main menu logo and mistlands logo. Change change the name it searches for in BepInEx folder. Comes with a default logo & default game logos as examples.",
+  "description": "Changes main menu logo and ashlands logo. Change the name it searches for in BepInEx folder. Comes with a default logo & default game logos as examples.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2202"
   ]

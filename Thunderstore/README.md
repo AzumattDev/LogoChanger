@@ -1,12 +1,12 @@
 # Description
 
-## Changes main menu logo and mistlands logo. Change change the name it searches for in BepInEx folder. Comes with a default logo & default game logos as examples.
+## Changes main menu logo and mistlands logo. Change the name it searches for in BepInEx folder. Comes with a default logo & default game logos as examples.
 
 `ONLY WORKS ON Mistlands & later.`
 
 #### Need to Know
 
-- Default names are `LogoChanger_LOGO.png` (1000x394) & `LogoChanger_MistlandsLogo.png` (2048x448)
+- Default names are `LogoChanger_LOGO.png` (1000x394) & `LogoChanger_AshlandsLogo.png` (2048x448)
     - Put the logos anywhere in the BepInEx config folder (though a default folder is created called
       Azumatt.LogoChanger_Images, it's recommended to keep them here.)
     - `Note, the default folder contains the default images inside of a zip called "DefaultLogos.zip". You MUST extract them from there before launching the mod for the first time, as the files must be present to work properly.`
